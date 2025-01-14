@@ -1,11 +1,5 @@
 # Project Menampilkan Jumlah Pendaftar Google Form Melalui Display Dot Matrix ESP32
 
-Berikut adalah tutorial lengkap yang diperbarui dengan petunjuk mengambil file dari repositori dan Google Apps Script.
-
----
-
-# Tutorial Menghitung Data Google Form dengan ESP32 dan Dot Matrix MAX7219
-
 ## 1. **Membuat Google Form dan Menyiapkan Google Apps Script**
 
 1. **Buat Google Form:**
