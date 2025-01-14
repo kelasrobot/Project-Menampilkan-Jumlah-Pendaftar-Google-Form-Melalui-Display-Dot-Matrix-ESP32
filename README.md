@@ -1,6 +1,13 @@
 # Project Menampilkan Jumlah Pendaftar Google Form Melalui Display Dot Matrix ESP32
 
+Berikut adalah tutorial lengkap yang diperbarui dengan petunjuk mengambil file dari repositori dan Google Apps Script.
+
+---
+
+# Tutorial Menghitung Data Google Form dengan ESP32 dan Dot Matrix MAX7219
+
 ## 1. **Membuat Google Form dan Menyiapkan Google Apps Script**
+
 1. **Buat Google Form:**
    - Buat form baru di Google Forms.
    - Tambahkan pertanyaan sesuai kebutuhan (contoh: Nama, Email, Nomor Telepon, dll).
@@ -9,22 +16,7 @@
 2. **Menambahkan Google Apps Script:**
    - Buka Google Sheets yang terhubung dengan Google Form.
    - Klik **Extensions** > **Apps Script**.
-   - Masukkan kode berikut:
-     ```javascript
-     function doGet(e) {
-       var spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
-       var sheet = spreadsheet.getActiveSheet();
-       var range = sheet.getDataRange();
-       var data = range.getValues();
-       var jumlahData = data.length - 1; // Abaikan header
-       var output = {
-         status: "success",
-         jumlahData: jumlahData
-       };
-       return ContentService.createTextOutput(JSON.stringify(output))
-                            .setMimeType(ContentService.MimeType.JSON);
-     }
-     ```
+   - Salin dan tempel kode dari file **Code.gs** yang dapat ditemukan di Google Apps Script dengan nama **Code.gs**.
    - Klik **Save**, beri nama proyek, lalu klik **Deploy** > **New Deployment**.
    - Pilih **Web App**, atur hak akses ke **Anyone**. Klik **Deploy**.
    - Salin URL yang diberikan (contoh: `https://script.google.com/macros/s/your-script-id/exec`).
@@ -32,6 +24,7 @@
 ---
 
 ## 2. **Menambahkan Library ke Arduino IDE**
+
 Untuk menggunakan **WiFi** dan **Dot Matrix MAX7219**, kita memerlukan library tambahan.
 
 1. **Buka Library Manager:**
@@ -51,6 +44,7 @@ Untuk menggunakan **WiFi** dan **Dot Matrix MAX7219**, kita memerlukan library t
 ---
 
 ## 3. **Rangkaian Hardware**
+
 Gunakan diagram berikut untuk menyambungkan ESP32 ke Dot Matrix MAX7219:
 
 ### **Koneksi Pin**
@@ -67,88 +61,19 @@ Pastikan koneksi kuat dan suplai daya mencukupi.
 ---
 
 ## 4. **Kode Arduino untuk ESP32**
-Gunakan kode berikut untuk ESP32:
 
-```cpp
-#include <WiFi.h>
-#include <WiFiClient.h>
-#include <HTTPClient.h>
-#include <ArduinoJson.h>
-#include <MD_Parola.h>
-#include <MD_MAX72XX.h>
-#include <SPI.h>
+Kode Arduino dapat ditemukan di folder repositori dengan nama **Coding_Final.ino**. Silakan salin kode tersebut ke dalam Arduino IDE Anda. 
 
-// Konfigurasi WiFi
-const char* ssid = "isi nama wifi";
-const char* password = "isi password wifi";
-
-// URL Google Apps Script
-const char* serverName = "https://script.google.com/macros/s/your-script-id/exec";
-
-// Konfigurasi Dot Matrix
-#define HARDWARE_TYPE MD_MAX72XX::FC16_HW
-#define MAX_DEVICES 4
-#define CS_PIN      5
-
-MD_Parola myDisplay = MD_Parola(HARDWARE_TYPE, CS_PIN, MAX_DEVICES);
-
-int requestSukses = 0;
-int requestGagal = 0;
-
-void setup() {
-  Serial.begin(115200);
-
-  // Menghubungkan ke WiFi
-  WiFi.begin(ssid, password);
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(1000);
-    Serial.print(".");
-  }
-  Serial.println("\nWiFi Terhubung!");
-
-  // Inisialisasi Dot Matrix
-  myDisplay.begin();
-  myDisplay.setIntensity(6);
-  myDisplay.displayClear();
-}
-
-void loop() {
-  if (WiFi.status() == WL_CONNECTED) {
-    HTTPClient http;
-    http.begin(serverName);
-    int httpResponseCode = http.GET();
-
-    if (httpResponseCode == 200) {
-      requestSukses++;
-      String respons = http.getString();
-
-      StaticJsonDocument<512> doc;
-      deserializeJson(doc, respons);
-
-      int jumlahData = doc["jumlahData"];
-      Serial.println("Jumlah Data: " + String(jumlahData));
-
-      // Menampilkan di Dot Matrix
-      myDisplay.displayClear();
-      myDisplay.print(jumlahData);
-    } else {
-      requestGagal++;
-      Serial.println("Request gagal: " + String(httpResponseCode));
-    }
-
-    http.end();
-  } else {
-    Serial.println("WiFi tidak terhubung!");
-    myDisplay.print("WiFi Error");
-  }
-
-  delay(10000);
-}
-```
+### **Cara Menggunakan Kode Arduino:**
+1. Salin file **Coding_Final.ino** dari folder repositori Anda ke komputer.
+2. Buka file tersebut menggunakan Arduino IDE.
+3. Pastikan untuk mengganti URL Google Apps Script pada bagian kode dengan URL Anda (contoh: `https://script.google.com/macros/s/your-script-id/exec`).
+4. Upload ke board ESP32.
 
 ---
 
 ## 5. **Pengujian**
+
 1. **Upload Kode ke ESP32:**
    - Sambungkan ESP32 ke komputer.
    - Pilih port dan board yang sesuai.
@@ -163,4 +88,13 @@ void loop() {
 
 ---
 
-Jika ada kendala atau perlu tambahan penjelasan, silakan tanyakan! 😊
+## 6. **Informasi Tambahan**
+
+Untuk kebutuhan custom proyek atau lainnya, silakan hubungi kami melalui WhatsApp: **081287931296**.
+
+**Ikuti dan Dukung KelasRobot di Media Sosial:**
+- **Instagram:** [KelasRobot](https://www.instagram.com/kelasrobot)
+- **Facebook:** [KelasRobot](https://www.facebook.com/kelasrobot)
+- **YouTube:** [KelasRobot Channel](https://www.youtube.com/kelasrobot)
+
+Semoga bermanfaat, dan jangan ragu untuk bertanya jika ada kesulitan! 😊
